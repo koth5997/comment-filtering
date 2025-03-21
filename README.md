@@ -43,7 +43,7 @@ comment-filtering/
 │   ├── models/
 │   │   └── filter_model.py
 │   ├── utils/
-│   └── app.py
+│   └── main.py
 ├── data/
 │   ├── blacklist.txt
 │   └── label_data.csv
@@ -55,6 +55,8 @@ comment-filtering/
 ├── notebooks/
 │   └── model_training.ipynb
 └── requirements.txt
+└── .env
+└── .gitignore
 ```
 
 ---
