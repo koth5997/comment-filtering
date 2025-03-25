@@ -1,6 +1,6 @@
 # 🧼 Comment Filtering Extension
 
-Chrome에서 유튜브와 네이버 뉴스 댓글을 필터링해주는 확장 프로그램입니다.  
+Chrome에서 유튜브와 네이버 뉴스 댓글을 필터링해주는 확장 프로그램입니다. 향후 다른 사이트들도 추가할 예정입니다.
 사용자별 금칙어 설정이 가능하며, Google 계정을 통해 사용자 ID를 가져옵니다.  
 FastAPI 기반 백엔드와 MySQL을 연동하여 금칙어 관리를 수행합니다.
 
@@ -50,7 +50,7 @@ FastAPI 기반 백엔드와 MySQL을 연동하여 금칙어 관리를 수행합�
 
 ```bash
 # 1. 의존성 설치
-pip install fastapi uvicorn python-dotenv pymysql sqlalchemy
+pip install -r requirements.txt
 
 # 2. .env 파일 설정
 DB_USER=your_username
@@ -60,36 +60,12 @@ DB_PORT=3306
 DB_NAME=your_database
 
 # 3. 서버 실행
-python main.py
+ uvicorn main:app --reload
 ```
 
 ---
 
-### 🧩 크롬 확장 프로그램 설치
-
-1. `chrome://extensions` 접속
-2. **우측 상단 '개발자 모드' 활성화**
-3. `확장 프로그램 폴더` 선택 → `압축 해제된 확장 프로그램 로드`
-4. 댓글 영역에 자동으로 필터링 적용됨
-
----
-
-## 🧪 예시
-
-- 유튜브 댓글: `#content-text`  
-- 네이버 댓글: `.u_cbox_contents`  
-- 금칙어 포함 시 댓글 `blur(5px)` 처리 + 빨간 테두리
-
----
-
-## 🧠 향후 개선 사항 (To-Do)
-
-- [ ] 금칙어 자동 추천 기능
-- [ ] 블러 처리 대신 가림말로 대체 기능
-- [ ] 사용자별 금칙어 카테고리화 UI
-- [ ] 댓글 내 단어 빈도 통계 시각화
-- [ ] 다국어 지원 (영어/일본어 등)
-
+### 가
 ---
 
 ## 👨‍💻 개발자 정보
