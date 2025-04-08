@@ -37,10 +37,10 @@ FastAPI 기반 백엔드와 MySQL을 연동하여 금칙어 관리를 수행합�
 | 분류 | 기술 |
 |------|------|
 | Frontend | JavaScript, HTML |
-| Backend | FastAPI, SQLAlchemy, pymysql |
+| Backend | FastAPI, SQLAlchemy|
 | DB | MySQL |
 | Chrome API | identity, runtime, storage |
-| 인증 | Google OAuth2 (Chrome Identity API) |
+| 기타 | Google OAuth2 (Chrome Identity API), Docker, dotenv |
 
 ---
 
