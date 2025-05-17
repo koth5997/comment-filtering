@@ -9,17 +9,21 @@ from sqlalchemy import create_engine, text
 
 load_dotenv()
 app = FastAPI()
+EXTENSION_ORIGIN = os.getenv("EXTENSION_ORIGIN")
 
-# CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        EXTENSION_ORIGIN,
+        "https://n.news.naver.com",
+        "https://www.youtube.com"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 환경변수로부터 DB 설정 로드
+
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_HOST = os.getenv("DB_HOST")
@@ -29,7 +33,7 @@ DB_NAME = os.getenv("DB_NAME")
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
 
-# 요청 바디 모델
+
 class UserBadWordRequest(BaseModel):
     user_id: str
     word: str
@@ -39,7 +43,7 @@ class CommentFilterRequest(BaseModel):
     user_id: str
     comments: list[str]
 
-# 홈 라우트
+
 @app.get("/")
 def home():
     return {"message": "FastAPI MySQL 금칙어 관리 API입니다"}
