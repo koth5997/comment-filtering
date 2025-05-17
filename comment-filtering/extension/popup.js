@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("로그인에 실패했습니다.");
             // 로그인 실패 시 기본 사용자 ID 생성
             userId = "default_user_" + Date.now();
-            console.log("⚠️ 기본 userId 생성:", userId);
+            console.log("기본 userId 생성:", userId);
             chrome.runtime.sendMessage({
                 type: "SET_USER_ID",
                 userId: userId
@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        console.log("✅ 로그인 성공, 토큰:", token);
+        console.log("로그인 성공, 토큰:", token);
         
         // Google API를 직접 호출하여 사용자 정보 가져오기
         fetch('https://www.googleapis.com/oauth2/v1/userinfo?alt=json', {
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             userId = data.id || data.email.split('@')[0];
-            console.log("✅ Google API에서 userId 가져옴:", userId);
+            console.log("Google API에서 userId 가져옴:", userId);
             
             chrome.runtime.sendMessage({
                 type: "SET_USER_ID",
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Google API 오류:", error);
             // API 호출 실패 시 기본 ID 생성
             userId = "default_user_" + Date.now();
-            console.log("⚠️ 기본 userId 생성:", userId);
+            console.log("기본 userId 생성:", userId);
             chrome.runtime.sendMessage({
                 type: "SET_USER_ID",
                 userId: userId
