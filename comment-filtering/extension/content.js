@@ -23,7 +23,7 @@ const waitForComments = (callback, maxRetries = 15) => {
         if (window.location.hostname.includes("youtube.com")) {
             targetNode = document.querySelector("#comments");
         } else if (window.location.hostname.includes("n.news.naver.com")) {
-            targetNode = document.querySelector(".u_cbox_content_wrap");
+            targetNode = document.querySelector(".u_cbox_content_wrap") || document.querySelector("#comment"); // 예외 보완
         }
 
         if (targetNode) {
@@ -46,17 +46,11 @@ const extractComments = () => {
 
     if (window.location.hostname.includes("youtube.com")) {
         document.querySelectorAll("#content-text").forEach(el => {
-            comments.push({
-                text: el.innerText,
-                element: el
-            });
+            comments.push({ text: el.innerText.trim(), element: el });
         });
     } else if (window.location.hostname.includes("n.news.naver.com")) {
         document.querySelectorAll("span.u_cbox_contents").forEach(el => {
-            comments.push({
-                text: el.innerText,
-                element: el
-            });
+            comments.push({ text: el.innerText.trim(), element: el });
         });
     }
 
@@ -78,14 +72,12 @@ const sendToBackend = (comments, userId) => {
         })
     })
         .then(res => {
-            if (!res.ok) {
-                throw new Error(`API 요청 실패: ${res.status}`);
-            }
+            if (!res.ok) throw new Error(`API 요청 실패: ${res.status}`);
             return res.json();
         })
         .then(data => {
             console.log("필터링 결과:", data);
-            if (data.filtered_comments && data.filtered_comments.length > 0) {
+            if (data.filtered_comments?.length > 0) {
                 console.log(`필터링된 댓글: ${data.filtered_comments.length}개`);
                 applyBlur(comments, data.filtered_comments);
             } else {
@@ -99,7 +91,7 @@ const applyBlur = (comments, filteredTexts) => {
     console.log("블러 처리 시작");
 
     comments.forEach(comment => {
-        if (filteredTexts.includes(comment.text)) {
+        if (filteredTexts.some(filtered => comment.text.includes(filtered))) {
             console.log(`블러 처리: "${comment.text.substring(0, 20)}..."`);
             comment.element.style.filter = "blur(5px)";
             const parent = comment.element.parentElement;
@@ -119,7 +111,7 @@ const observeComments = (targetNode, userId) => {
         const comments = extractComments();
         if (comments.length > 0) {
             sendToBackend(comments, userId);
-            applyUserDefinedWords(userId); // 🔸 새 댓글 생길 때마다 사용자 금칙어 블러 처리
+            applyUserDefinedWords(userId);
         }
     });
 
@@ -128,15 +120,14 @@ const observeComments = (targetNode, userId) => {
 
     const initial = extractComments();
     if (initial.length > 0) {
-        console.log(`🔍 초기 댓글 ${initial.length}개 필터링 시작`);
+        console.log(`초기 댓글 ${initial.length}개 필터링 시작`);
         sendToBackend(initial, userId);
-        applyUserDefinedWords(userId); // 🔸 초기 댓글에 사용자 금칙어 블러 처리
+        applyUserDefinedWords(userId);
     } else {
         console.log("초기 댓글이 없습니다");
     }
 };
 
-//사용자 금칙어 블러 처리 함수 (전역 함수)
 function applyUserDefinedWords(userId) {
     fetch(`http://127.0.0.1:8000/user_badwords/${userId}`)
         .then(res => res.json())
@@ -148,7 +139,7 @@ function applyUserDefinedWords(userId) {
 
             const blurComments = (selector) => {
                 document.querySelectorAll(selector).forEach(comment => {
-                    const text = comment.innerText;
+                    const text = comment.innerText.trim();
                     if (badWords.some(word => text.includes(word))) {
                         comment.style.filter = "blur(5px)";
                         comment.title = "사용자 금칙어에 의해 블러 처리됨";
