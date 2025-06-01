@@ -15,6 +15,7 @@ FastAPI 기반 백엔드와 MySQL을 연동하여 금칙어 관리를 수행합�
 - [x] Google 로그인 연동으로 사용자 ID 식별  
 - [x] FastAPI + MySQL 백엔드 서버 연동  
 - [x] 댓글 영역 변경 시 실시간 감지 및 필터링
+- [x] 도커 업로드 완료  
 
 ---
 
@@ -29,6 +30,11 @@ FastAPI 기반 백엔드와 MySQL을 연동하여 금칙어 관리를 수행합�
 ├── popup.js              # 사용자 입력 처리
 📁 backend/
 ├── main.py               # FastAPI 서버 + DB 연결
+├── .dorckerignore
+├── .env
+├── docker-compose.yml
+├── init.sql
+├── requiremnets
 ```
 
 ---
@@ -60,8 +66,6 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=your_database
 
-# 3. 서버 실행
- uvicorn main:app --reload
 ```
 
 ---
