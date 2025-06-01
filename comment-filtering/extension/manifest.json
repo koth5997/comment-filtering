@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Comment Filtering Extension",
+  "version": "1.0",
+  "description": "유튜브, 네이버 댓글 필터링 확장 프로그램",
+  "permissions": ["storage", "cookies", "identity", "identity.email"],
+  "oauth2": {
+    "client_id": "1093655879452-292hqln8n9549joofjjj9ngmrfhk92gq.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"]
+  },
+  "host_permissions": [
+    "https://www.youtube.com/*",
+    "https://n.news.naver.com/*",
+    "https://www.googleapis.com/*",
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://n.news.naver.com/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}
