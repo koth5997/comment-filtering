@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>금칙어 설정</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans KR', sans-serif; width: 300px; padding: 15px; }
+    h2 { margin-top: 0; color: #333; }
+    .input-group { display: flex; gap: 5px; margin-bottom: 8px; }
+    input, select { flex: 1; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+    button { padding: 5px 10px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:disabled { background-color: #aaa; cursor: default; }
+    .status-msg { font-size: 12px; color: gray; height: 16px; margin-bottom: 8px; }
+    .summary { font-size: 13px; margin: 8px 0; color: #555; }
+    .badge { display: inline-block; padding: 2px 6px; font-size:12px; background:#eee; border-radius:3px; margin-left:8px; color:#333; }
+    #word-list { list-style: none; padding: 0; margin-top: 5px; }
+    #word-list li { background: #f1f1f1; padding: 6px 10px; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; border-radius: 4px; }
+    #word-list li button { background: #ff6b6b; color: #fff; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; }
+      .badge {
+    display: inline-block;
+    background: #eee;
+    color: #555;
+    border-radius: 3px;
+    padding: 2px 4px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+  </style>
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <h2>금칙어 설정</h2>
+  <div class="input-group">
+    <input type="text" id="bad-word" placeholder="금칙어 입력">
+    <select id="category">
+      <option value="기타">기타</option>
+      <option value="욕설">욕설</option>
+      <option value="정치">정치</option>
+      <option value="혐오">혐오</option>
+    </select>
+    <button id="add-word">추가</button>
+  </div>
+  <div class="status-msg" id="status-message"></div>
+  <!-- 카테고리별 요약 -->
+  <div class="summary" id="category-summary"></div>
+  <!-- 실제 금칙어 리스트 -->
+  <ul id="word-list"></ul>
+</body>
+</html>
