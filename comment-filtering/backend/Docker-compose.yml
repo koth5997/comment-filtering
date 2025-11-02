@@ -1,0 +1,35 @@
+# docker-compose.yml
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: rhxogml2002!
+      MYSQL_DATABASE: commentfilter
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+
+  backend:
+    build: .
+    # 개발 편의: 로컬 변경 즉시 반영하려면 아래 볼륨 유지
+    # 단, 호스트에 __pycache__/*.pyc 없도록 0단계 청소 + .dockerignore 필수
+    volumes:
+      - .:/app
+    # 환경변수: 도커 네트워크니까 DB_HOST=db, DB_PORT=3306
+    environment:
+      DB_USER: appuser
+      DB_PASSWORD: app_pass_123
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: commentfilter
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
