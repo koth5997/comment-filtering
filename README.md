@@ -1,109 +1,60 @@
-# 개인화 댓글 필터링 확장프로그램
+# 🧩 댓글 필터링 크롬 확장 & FastAPI 백엔드
 
-사용자 맞춤형 금칙어를 통해 YouTube와 네이버 뉴스 댓글을 실시간으로 필터링하는 Chrome Extension입니다.
+유튜브·네이버 뉴스 댓글에서 **사용자 맞춤 금칙어**를 기준으로 댓글을 탐지/블러 처리하는 프로젝트입니다.  
+크롬 확장 프로그램이 실시간으로 댓글을 스캔하고, FastAPI 백엔드가 사용자별 금칙어를 **MySQL**에 저장·관리합니다.
 
-## 주요 기능
+---
 
-- **실시간 댓글 필터링**: MutationObserver를 활용한 동적 댓글 감지 및 필터링
-- **사용자 맞춤 금칙어**: Google OAuth 인증을 통한 개인별 금칙어 관리
-- **카테고리별 분류**: 욕설, 정치, 혐오 등 카테고리별 금칙어 구분
-- **멀티 플랫폼 지원**: YouTube, 네이버 뉴스 댓글 동시 지원
-- **비크롤링 방식**: 브라우저 내부 DOM 접근으로 차단 회피 불가능
+## 🚀 주요 기능
+- **Google 로그인 기반 사용자 식별** (chrome.identity)
+- **금칙어 CRUD API** 제공: 추가 / 삭제 / 조회 / 댓글 필터링
+- **유튜브·네이버 뉴스 댓글 실시간 탐지 및 블러 처리**
+- **Docker 기반 로컬 개발 환경 구성**
+- **CORS 도메인 제한 설정 (보안 강화)**
 
-## 기술 스택
+---
 
-### Frontend (Chrome Extension)
-- **Manifest V3**
-- **Google OAuth2** - 사용자 인증
-- **MutationObserver** - 실시간 DOM 변화 감지
+## 🧱 아키텍처 개요
 
-### Backend
-- **FastAPI** - Python 웹 프레임워크
-- **SQLAlchemy** - ORM 
-- **PyMySQL** - MySQL 드라이버
-- **Python-dotenv** - 환경변수 관리
+```text
+[Chrome Extension]
+  ├─ popup.html / popup.js : 금칙어 UI
+  ├─ background.js : 로그인 사용자 ID 관리
+  └─ content.js : 댓글 DOM 탐지 → blur 처리
 
-### Database
-- **MySQL 8.0**
+          │  (message)
+          ▼
+[FastAPI Backend]
+  ├─ /user_badwords (POST/GET/DELETE)
+  └─ /filter (POST)
+          │
+          ▼
+[MySQL]
+  └─ user_bad_words(user_id, word, category, created_at)
 
-### DevOps
-- **Docker & Docker Compose** - 컨테이너화
-- **CORS** - 크로스 오리진 요청 처리
 
-## 프로젝트 구조
+backend/
+ ├─ main.py            # FastAPI 진입점
+ ├─ init.sql           # MySQL 스키마 초기화
+ ├─ Dockerfile         # 백엔드 도커 설정
+ ├─ docker-compose.yml # FastAPI + MySQL 통합 실행
+extension/
+ ├─ manifest.json
+ ├─ background.js
+ ├─ popup.html
+ ├─ popup.js
+ └─ content.js
 
-```
-comment-filtering/
-├── backend/
-│   ├── main.py                 # FastAPI 메인 애플리케이션
-│   ├── requirements.txt        # Python 패키지 의존성
-│   ├── Dockerfile             # 백엔드 컨테이너 설정
-│   ├── docker-compose.yml     # 서비스 오케스트레이션
-│   ├── init.sql              # 데이터베이스 초기화
-│   └── .env                  # 환경변수
-└── extension/
-    ├── manifest.json         # 확장프로그램 설정
-    ├── background.js         # 서비스 워커
-    ├── content.js           # 댓글 필터링 로직
-    ├── popup.html           # 팝업 UI
-    └── popup.js            # 팝업 기능
-```
 
-## 설치 및 실행
+##데이터 베이스 스키마
+CREATE DATABASE IF NOT EXISTS commentfilter;
+CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'app_pass_123';
+GRANT SELECT, INSERT, DELETE, UPDATE ON commentfilter.* TO 'appuser'@'%';
+FLUSH PRIVILEGES;
 
-### 1. 저장소 클론
+USE commentfilter;
 
-```bash
-git clone https://github.com/your-username/comment-filtering.git
-cd comment-filtering
-```
-
-### 2. 백엔드 실행
-
-```bash
-cd backend
-
-# Docker Compose로 실행 (권장)
-docker compose up --build
-
-# 또는 로컬 실행
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
-### 3. Chrome Extension 설치
-
-1. Chrome 브라우저에서 `chrome://extensions/` 접속
-2. "개발자 모드" 활성화
-3. "압축해제된 확장 프로그램을 로드합니다" 클릭
-4. `extension` 폴더 선택
-
-### 4. OAuth 설정
-
-```javascript
-// manifest.json의 client_id를 본인 Google Cloud Console 프로젝트로 변경
-"client_id": "YOUR_GOOGLE_OAUTH_CLIENT_ID"
-```
-
-## API 엔드포인트
-
-### 사용자 금칙어 관리
-- `GET /user_badwords/{user_id}` - 금칙어 목록 조회
-- `POST /user_badwords` - 금칙어 추가
-- `DELETE /user_badwords/{user_id}/{word}` - 금칙어 삭제
-
-### 댓글 필터링
-- `POST /filter` - 댓글 텍스트 배열을 받아 필터링된 댓글 반환
-
-### 상태 확인
-- `GET /` - 서버 상태 확인
-
-## 데이터베이스 스키마
-
-```sql
-CREATE TABLE user_bad_words (
+CREATE TABLE IF NOT EXISTS user_bad_words (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id VARCHAR(100) NOT NULL,
     word VARCHAR(100) NOT NULL,
@@ -111,58 +62,109 @@ CREATE TABLE user_bad_words (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_user_word (user_id, word)
 );
-```
 
-## 기술적 특징
+⚙️ 백엔드 (FastAPI)
+▶️ 실행 방법
+# 1. 의존성 설치
+pip install -r requirements.txt
 
-### 크롤링이 아닌 브라우저 네이티브 접근
-- 외부 HTTP 요청이 아닌 브라우저 내부 DOM 직접 접근
-- Cloudflare, CAPTCHA 등 크롤링 차단 기술에 영향받지 않음
-- 사용자 브라우저에서 실행되므로 차단 불가능
+# 2. 서버 실행
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
-### 실시간 동적 콘텐츠 처리
-- MutationObserver로 SPA의 동적 댓글 로딩 감지
-- 페이지 리로드 없는 댓글 추가/삭제 실시간 대응
-
-### 확장 가능한 아키텍처
-- 새로운 사이트 추가 용이
-- 카테고리별 필터링 규칙 확장 가능
-
-## 환경 변수
-
-```env
+🔧 환경 변수 (.env)
 DB_USER=appuser
-DB_PASSWORD=your_password
-DB_HOST=localhost  # Docker: db
-DB_PORT=3307
+DB_PASSWORD=app_pass_123
+DB_HOST=localhost
+DB_PORT=3306
 DB_NAME=commentfilter
-PORT=8000
-EXTENSION_ORIGIN="chrome-extension://your-extension-id"
-```
+EXTENSION_ORIGIN=chrome-extension://
 
-## 개발 환경
+🧩 API 명세
+메서드	엔드포인트	설명
+GET	/	서버 상태 확인
+GET	/user_badwords/{user_id}	사용자 금칙어 목록 조회
+POST	/user_badwords	금칙어 추가
+DELETE	/user_badwords/{user_id}/{word}	금칙어 삭제
+POST	/filter	댓글 리스트에서 금칙어 포함된 문장만 반환
+예시 호출
+# 금칙어 추가
+curl -X POST http://127.0.0.1:8000/user_badwords \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"u123","word":"금칙어","category":"정치"}'
 
-- Python 3.11+
-- Node.js 16+ (선택사항)
-- MySQL 8.0
-- Docker & Docker Compose
+# 금칙어 조회
+curl http://127.0.0.1:8000/user_badwords/u123
 
-## 기여하기
+# 댓글 필터링
+curl -X POST http://127.0.0.1:8000/filter \
+  -H "Content-Type: application/json" \
+  -d '{"user_id":"u123","comments":["이건 금칙어 포함","깨끗한 댓글"]}'
 
-1. 이 저장소를 Fork 합니다
-2. 새로운 기능 브랜치를 생성합니다 (`git checkout -b feature/amazing-feature`)
-3. 변경사항을 커밋합니다 (`git commit -m 'Add some amazing feature'`)
-4. 브랜치에 Push 합니다 (`git push origin feature/amazing-feature`)
-5. Pull Request를 생성합니다
+크롬 확장 구성
+manifest.json
 
-## 라이선스
+MV3 기반
 
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
+권한: storage, cookies, identity, identity.email
 
-## 문의
+OAuth2 client_id, Google API 스코프 포함
 
-프로젝트에 대한 질문이나 제안사항이 있으시면 Issues를 통해 연락주세요.
+host_permissions: YouTube, Naver, Google API, localhost
 
----
+background: Service Worker 등록
 
-**참고**: 이 확장프로그램은 사용자의 브라우징 경험 향상을 위해 개발되었으며, 개인정보보호 정책을 준수합니다.
+popup.html, content_scripts 매핑
+
+background.js
+
+chrome.runtime.onMessage 수신 후 userId 관리
+
+chrome.identity.getProfileUserInfo()로 로그인 사용자 식별
+
+popup.html
+
+금칙어 입력 및 추가 버튼 UI
+
+금칙어 목록 표시 (API 연동 예정)
+
+Docker Compose (선택사항)
+docker-compose up --build
+
+
+FastAPI + MySQL 동시 실행
+
+init.sql을 자동 마운트하여 DB 초기화
+
+로컬 포트: 8000(API) / 3306(DB)
+
+보안 및 개선 계획
+
+ OAuth Client ID, 스코프 정책 검증
+
+ DB 계정 최소 권한 부여
+
+ 금칙어 정규식 / 변형 문자 대응
+
+ Rate Limit / 캐싱 / 비동기 처리
+
+ UI 커스터마이즈 (블러 강도, 표시 문구)
+
+  향후 로드맵
+
+ 금칙어 카테고리별 토글
+
+ 사이트별 필터링 커스터마이즈
+
+ 로그 / 통계 기능 추가
+
+ 사용자 인터페이스 개선
+
+라이선스
+
+이 프로젝트는 MIT License 또는 Apache-2.0 License를 권장합니다.
+(LICENSE 파일을 루트 디렉터리에 추가하세요.)
+
+동서대학교 컴퓨터공학과 졸업작품 — 댓글 필터링 시스템
+Backend: FastAPI, MySQL
+Frontend: Chrome Extension (Manifest V3)
+Container: Docker / Docker Compose
