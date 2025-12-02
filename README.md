@@ -47,7 +47,7 @@ extension/
  ├─ popup.js
  └─ content.js
 ```
-##데이터베이스 스키마 (inti.sql)
+## 데이터베이스 스키마 (inti.sql)
 ```
 CREATE DATABASE IF NOT EXISTS commentfilter;
 CREATE USER IF NOT EXISTS 'appuser'@'%' IDENTIFIED BY 'app_pass_123';
@@ -66,8 +66,8 @@ CREATE TABLE IF NOT EXISTS user_bad_words (
 );
 ```
 
-##백엔드 (FastAPI, Docker)
-#FastAPI 실행 방법
+## 백엔드 (FastAPI, Docker)
+# FastAPI 실행 방법
 ```
  # 1. 의존성 설치
 pip install -r requirements.txt
@@ -75,7 +75,7 @@ pip install -r requirements.txt
 # 2. 서버 실행
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
-#Docker 실행 방법
+# Docker 실행 방법
 ```
 docker-compose up --build
 ```
@@ -87,7 +87,7 @@ curl http://127.0.0.1:8000/
 # MySQL 접속 확인
 docker exec -it comment-db mysql -u appuser -p
 
-#중단
+# 중단
 docker-compose down
 
 ```
