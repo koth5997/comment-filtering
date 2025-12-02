@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS user_bad_words (
 ## 백엔드 (FastAPI, Docker)
 # FastAPI 실행 방법
 ```
- # 1. 의존성 설치
+# 1. 의존성 설치
 pip install -r requirements.txt
 
 # 2. 서버 실행
@@ -79,7 +79,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 docker-compose up --build
 ```
-#실행 후 확인
+# 실행 후 확인
 ```
 # FastAPI 상태 확인
 curl http://127.0.0.1:8000/
